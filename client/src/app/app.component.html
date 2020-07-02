@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div class="container">
+    <div class = "header">
+        <a href="https://www.ebay.com/" target="_blank"> <img class = "ebay-header" src="/assets/ebayHome.png" style="width:180px"></a>
+    </div>
+</div>
+<div class="container col-md-9" ng-app="myApp" ng-controller="formCtrl">
+  <form name="myForm" novalidate id="submitForm">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-10 table form-group">
+          <label class="form-inline lfont">Key words&nbsp;<span style="color:red;">* </span><div class=col-md-1></div>
+            <input type="text" id = "keywords" name= "keyWords" (keyup)="onKey($event)" class="form-control col-md-9"  placeholder="Enter keywords" required>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-md-10 table form-group">
+          <label class="form-inline lfont">Price Range<div class=col-md-1></div>
+            <input type="text" id = "from" (keyup)="onmin($event)" class="form-control col-md-4" placeholder="Min Price">
+            <div class=col-md-1></div>
+            <input type="text" id = "to" (keyup)="onmax($event)" class="form-control col-md-4" placeholder="Max Price">
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="container" style="margin-top: 1%;">
+      <div class="row">
+          <div class="col-md-10 table form-group">
+              <label class="form-inline lfont">Condition&nbsp;&nbsp;&nbsp;&nbsp;<div class=col-md-1></div>
+                <div class="checkbox"  *ngFor="let condition of conditions">
+                  <input type="checkbox" name = "condition" value= {{condition.name}} class="form-check-input"/> {{condition.name}}&nbsp;                       
+                </div>
+              </label>
+          </div>
+      </div>
+    </div>
+
+    <div class="container" style="margin-top: 1%;">
+      <div class="row">
+          <div class="col-md-10 table form-group">
+              <label class="form-inline lfont">Seller&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class=col-md-1></div>
+                <div class="checkbox" *ngFor="let seller of sellers">
+                  <input type="checkbox" class="form-check-input"  id = "seller" value= {{seller.seller_n}}/> {{seller.seller_n}}&nbsp;
+                </div>
+              </label>
+          </div>
+      </div>
+  </div>
+
+  <div class="container" style="margin-top: 1%;">
+    <div class="row">
+        <div class="col-md-10 table form-group">
+          <label class="form-inline lfont">Shipping&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class=col-md-1></div>
+            <div class="checkbox" *ngFor="let shipping of shippings">
+                <input type="checkbox" class="form-check-input" name="shipping" value={{shipping.shipping_n}}/> {{shipping.shipping_n}}&nbsp;
+            </div>
+            </label>
+         </div>
+      </div>
+  </div>
+  <div class="container" style="margin-top: 1%;">
+    <div class="row">
+        <div class="col-md-10 table form-group">
+          <label class="form-inline lfont">Sort Order&nbsp;&nbsp;<div class=col-md-1></div>
+            <select class=" custom-select form-control form-inline col-md-9" id = "sort" data-style="btn-secondary">
+              <option value="BestMatch" selected>Best Match</option> 
+              <option value="CurrentPriceHighest" >Price: highest first</option>
+              <option value="PricePlusShippingHighest" >Price + Shipping: highest first</option> 
+              <option value="PricePlusShippingLowest" >Price + Shipping: lowest first</option>
+          </select>
+          </label>
+        </div>
+    </div>
+  </div>
+
+  <div class=col-md-1 style="height: 20px;float: right;margin-top: 3%;margin-right: 6%;"></div>
+  <button type="button"  (click)="del_div();"class="btn btn-secondary" style="float: right;margin-top: 3%;margin-left: 1%;background-color: rgb(79,81,90);">
+  <img src = "assets/clear_all-24px.svg">Clear</button>
+  <button type="button" (click)="validation();add();" class="btn btn-primary" style="float: right;margin-top: 3%;background-color: rgb(61,108,161);">
+  <img src = "assets/search-24px.svg">Search
+  </button>
+
+
+
+  </form>
+  <div class="table"  style="width: 70%;margin-top: 10%;display: none;" id= "alertt">
+    <div class="alert alert-warning "  style="background-color: rgb(252,250,207); color: black;text-align: center;" >
+        Please enter a keyword
+    </div>
+</div>
+<div class="table"  style="width: 70%;margin-top: 10%;display: none;" id= "alertt2">
+    <div class="alert alert-warning "  style="background-color: rgb(252,250,207); color: black;text-align: center;" >
+        Please use appropriate values for minPrice/maxPrice
+    </div>
+</div>
+<div class="table"  style="width: 70%;margin-top: 10%;display: none;" id= "alertt3">
+  <div class="alert alert-warning "  style="background-color: rgb(252,250,207); color: black;text-align: center;" >
+      No exact matches found
+  </div>
+</div>
+
+
+</div>
+<div  class="container" style="position: relative;top:7rem" id = "resulttt"> 
+  <div *ngIf="isShown2" class = "card row no-gutters" style="width: 50rem;margin:0 auto; border:none;height:3rem"  >
+    <div style="width:13rem;font-size: 1.2rem;font-weight: 500;" >Result for {{key}}</div>
+
+  <div class="has-text-centered">
+    <pagination-controls (pageChange)="page = $event"></pagination-controls>
+  </div>
+  </div>
+  
+      <div *ngFor="let p of postBack | paginate: { itemsPerPage: 5, currentPage: page };let i=index">
+      <div class = "hahaha" style="width: 50rem;margin:0 auto; border:none;background-color:rgb(218,217,218);height:'{{heightd[i]}}'"  >
+              <div class = "left col-md-3 text-center"  style="margin-top: 0.5rem;height:100%;float:left;">
+                  <img class = "imgleft" src = "{{p.imgsrc}}" >
+              </div>
+              <div class = "right col-md-11" style='margin-left: 40px;'>
+                  <div style="margin-top: 0.8rem">
+                      <a href = "{{p.viewItemURL}}" target="_blank" >{{p.title}}</a>
+                      <div style="font-weight: bold;">Price:
+                          <span style="font-weight:normal;font-family: Century Gothic;" >{{p.price}}</span>
+                      </div>
+                      <div style="font-style: italic;margin-bottom: 0.8rem;">{{p.location}}
+                          <button (click)="hideme[i] = !hideme[i] ;show(i)"style="margin-left:0.3rem;font-style: normal;width: 5.8rem;height: 2rem;font-size:13px;border: none;border-radius: 0.2rem;">{{showf[i]}}</button>
+                      </div>
+                      <div  [hidden]="hideme[i]" style="height: 6rem;"></div>
+                      <mat-tab-group  [hidden]="!hideme[i]" style='margin-left: 140px;'>
+                        <mat-tab label="Basic Info"  >
+                              <div class="nav-f">Category Name
+                                <span class="nav-f" style="font-weight: normal;margin-left: 2rem;">
+                                  {{p.categoryName}}
+                                </span>
+                              </div >
+                              <div  class="nav-f">Condition
+                                <span class="nav-f" style="font-weight: normal;margin-left: 4.1rem;">
+                                  {{p.condition}}
+                                </span>
+                              </div >
+                          
+                        </mat-tab>
+                        <mat-tab label="Shipping Info">
+                          <div class="nav-f">ShippingType
+                            <span class="nav-f" style="font-weight: normal;margin-left: 5.3rem;">
+                              {{p.shippingType}}
+                            </span>
+                          </div>
+                              <div class="nav-f">Shipping cost
+                                <span class="nav-f" style="font-weight: normal;margin-left: 5.3rem;">
+                                  {{p.shippingCost}}
+                                </span>
+                              </div>
+                              <div class="nav-f">Shiptolocations
+                                <span class="nav-f" style="font-weight: normal;margin-left: 4.5rem;">
+                                  {{p.shipToLocations}}
+                                </span>
+                              </div>
+                              <div class="nav-f">ExpeditedShipping
+                                <img src = {{p.expeditedShipping}} style="font-weight: normal;margin-left: 3.5rem;">
+                              </div>
+                              <div class="nav-f">OneDayShippingAvailable
+                                <img src = {{p.OneDayShippingAvailable}} style="font-weight: normal;margin-left: 1rem;">
+                              </div>
+                        </mat-tab>
+                        <mat-tab label="Listing Info">
+                          <div class="nav-f">BestOfferEnabled
+                            <img src = {{p.BestOfferEnabled}} style="font-weight: normal;margin-left: 1rem;">
+                          </div>
+                          <div class="nav-f">BuyItNowAvailable
+                            <img src = {{p.BuyItNowAvailable}} style="font-weight: normal;margin-left: 0.7rem;">
+                          </div>
+                          <div class="nav-f">ListingType
+                            <span class="nav-f" style="font-weight: normal;margin-left: 3.5rem;">
+                              {{p.ListingType}}
+                            </span>
+                          </div>
+                          <div class="nav-f">Gift
+                            <img src = {{p.Gift}} style="font-weight: normal;margin-left: 6.1rem;">
+                          </div>
+                          <div class="nav-f">WatchCount
+                            <span class="nav-f" style="font-weight: normal;margin-left: 3.2rem;">
+                              {{p.WatchCount}}
+                            </span>
+                          </div>
+                        </mat-tab>
+                      </mat-tab-group>
+                  </div>
+              </div>
+          </div>
+
+      </div>
+</div>
+
+
+</body>
+</html>
+<router-outlet></router-outlet>
+

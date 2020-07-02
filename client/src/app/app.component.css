@@ -1,0 +1,28 @@
+.mat-tab-group {
+    margin-bottom: 48px;
+  }
+.header{
+    text-align: center;
+}
+
+.ebay-header{
+    position: relative;
+    margin: 0 auto;
+    top: 20px
+}
+.nav-f{
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+.table{
+    position: relative;
+    width: 80%;
+    top:20px;
+    margin: 0px auto;
+
+}
+
+.lfont{
+    font-weight: bold;
+}
